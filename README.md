@@ -1,112 +1,132 @@
-# BreakToy Inventory Backend
+# BreakToy Inventory – Backend
 
-Backend para la gestión de inventario de productos (BreakToy), construido con Spring Boot.
+This is the backend API for the **BreakToy Inventory Management** system. Built with **Spring Boot 3.4.5** and **Java 21**, it provides RESTful endpoints for managing product data and inventory metrics.
 
 ---
 
-## Requisitos
+## ⚙️ Requirements
 
-- Java 17 o superior
+- Java 17+
 - Maven 3.x
 
 ---
 
-## Instalación y uso
+## 🚀 Setup & Run
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/RaymundoZa/BackEnd_BreakToy.git
-   cd BackEnd_BreakToy
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/RaymundoZa/BackEnd_BreakToy.git
+cd BackEnd_BreakToy
    ```
-2. Compila el proyecto:
-   ```bash
-   mvn clean install
-   ```
-3. Ejecuta el backend:
-   ```bash
-   mvn spring-boot:run
-   ```  
-   El backend estará disponible en [http://localhost:9090](http://localhost:9090).
+   
+The backend will be available in [http://localhost:9090](http://localhost:9090).
 
 ---
 
-## Endpoints principales
+## 📦 REST API Overview
 
-### Obtener todos los productos
+### Get all products
 ```http
 GET /products
-```  
-Respuesta: lista de productos.
+```
+Returns a list of all products (with optional filters for name, category, and stock).
 
-### Crear un producto
+### Create a new product
 ```http
 POST /products
 Content-Type: application/json
 ```  
 ```json
 {
-  "name": "Nombre del producto",
-  "category": "Categoría",
+  "name": "Name of the product",
+  "category": "Category name",
   "unitPrice": 123.45,
   "quantityInStock": 10,
-  "expirationDate": "2025-12-31"
 }
 ```
 
-### Actualizar un producto
+### Update an existing product
 ```http
 PUT /products/{id}
 Content-Type: application/json
 ```  
 ```json
 {
-  "name": "Nuevo nombre",
-  "category": "Nueva categoría",
+  "name": "New Name",
+  "category": "New Category",
   "unitPrice": 200,
   "quantityInStock": 20,
-  "expirationDate": "2026-01-01"
 }
 ```
 
-### Eliminar un producto
+### Delete a product
 ```http
 DELETE /products/{id}
 ```
 
-### Marcar producto como en stock
+### Mark product as in stock
 ```http
 PUT /products/{id}/instock?quantity=10
 ```
 
-### Marcar producto como agotado
+### Mark product as out of stoc
 ```http
 POST /products/{id}/outofstock
 ```
 
-### Obtener métricas de inventario
+### Get inventory metrics
 ```http
 GET /products/metrics
 ```  
-Respuesta: métricas generales y por categoría.
+Returns total stock, total value, average price, and category breakdowns.
+
 
 ---
 
-## Estructura del proyecto
+## 🧠 Project Structure
 
 - `src/main/java/com/example/inventory_backend/`
-    - `Product.java`: modelo de producto
-    - `ProductController.java`: controlador con los endpoints
-- `pom.xml`: configuración de Maven
+    - `Product.java`: Product Model
+    - `ProductController.java`: HTTP Endpoints (/products)
+- `pom.xml`: Maven configuration
 
 ---
 
-## Notas
+## 🛡️ Validation & Error Handling
 
-- Datos en memoria (se pierden al reiniciar)
-- Para pruebas o desarrollo únicamente
+- Uses Jakarta Bean Validation annotations (@NotNull, @Size, etc.)
+- Global @ExceptionHandler returns structured field-level errors
 
 ---
 
-## Autor
+## 🔧 CORS Configuration
+
+To allow cross-origin request from the frontend (http://localhost:8080), we enabled a basico CORS filter in Spring Boot.
+
+---
+
+## ✅ Testing
+
+- JUnit 5 for unit tests (service layer)
+- WebMvcTest for controller endpoint testing
+- Uses Mockito and AssertJ for assertions and mocking
+
+```bash
+mvn test
+   ```
+
+---
+
+## 📌 Notes
+
+- Data is stored in memory (no database required)
+- Designed for prototyping and local development
+- Easily extendable with a real database using JPA
+
+---
+
+## 👨‍💻 Author
 
 Raymundo Daniel Zamora Juárez
+Encora SPARK Program · 2025
