@@ -6,19 +6,19 @@ import java.time.LocalDate;
 public class Product {
     private Long id;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 120, message = "El nombre no debe exceder 120 caracteres")
+    @NotBlank(message = "Name is required")
+    @Size(max = 120, message = "Name must not exceed 120 characters")
     private String name;
 
-    @NotBlank(message = "La categoría es obligatoria")
+    @NotBlank(message = "Category is required")
     private String category;
 
-    @NotNull(message = "El precio es obligatorio")
-    @Positive(message = "El precio debe ser positivo")
+    @NotNull(message = "Unit price is required")
+    @Positive(message = "Unit price must be positive")
     private Double unitPrice;
 
-    @NotNull(message = "La cantidad en inventario es obligatoria")
-    @Min(value = 0, message = "La cantidad no puede ser negativa")
+    @NotNull(message = "Quantity in stock is required")
+    @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantityInStock;
 
     private LocalDate expirationDate;
@@ -26,10 +26,10 @@ public class Product {
     private LocalDate updatedAt;
 
     public Product() {
-        // Constructor vacío necesario para Jackson y Spring
+        // Empty constructor required for Jackson and Spring
     }
 
-// Getters y Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

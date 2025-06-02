@@ -4,6 +4,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -16,14 +19,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.time.LocalDate;
 
-
 @RestController
 @RequestMapping("/products")
+@CrossOrigin(origins = "http://localhost:8080")
 public class ProductController {
 
     private List<Product> productList = new ArrayList<>();
 
-    // POST /products - Crea un producto con validación
+    // POST /products - Create a product with validation
     @PostMapping
     public Product createProduct(@Valid @RequestBody Product product) {
         long newId = productList.size() + 1;
@@ -34,16 +37,16 @@ public class ProductController {
         return product;
     }
 
-    // PUT /products/# - Para buscar productos y editarlos :D
+    // PUT /products/{id} - To find a product and edit it :D
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody Product updatedProduct) {
 
-        // Busca el producto por ID
+        // Search for the product by ID
         for (Product product : productList) {
             if (product.getId().equals(id)) {
-                // Actualiza los campos permitidos
+                // Update the allowed fields
                 product.setName(updatedProduct.getName());
                 product.setCategory(updatedProduct.getCategory());
                 product.setUnitPrice(updatedProduct.getUnitPrice());
@@ -54,11 +57,11 @@ public class ProductController {
             }
         }
 
-        // Si no lo encuentra, responde 404
+        // If not found, return 404
         return ResponseEntity.notFound().build();
     }
 
-    // DELETE /product/# - Para BORRAR un producto !!!!!!!!
+    // DELETE /products/{id} - To DELETE a product !!!!!!!!
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         for (Product product : productList) {
@@ -70,7 +73,7 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-    // PUT /products/#/instock?quantity=X Marcamos un producto como en STOCK
+    // PUT /products/{id}/instock?quantity=X - We mark a product as IN STOCK
     @PutMapping("/{id}/instock")
     public ResponseEntity<?> markProductInStock(
             @PathVariable Long id,
@@ -85,7 +88,7 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-    // POST /products/#/outofstock Para marcar que ya no hay stock de un productop
+    // POST /products/{id}/outofstock - To mark that there is no stock of a product
     @PostMapping("/{id}/outofstock")
     public ResponseEntity<?> markProductOutOfStock(@PathVariable Long id) {
         for (Product product : productList) {
@@ -98,12 +101,12 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-    // GET /products/metrics - Obtiene métricas generales y por categoría del inventario
+    // GET /products/metrics - Gets overall and category-based inventory metrics
     @GetMapping("/metrics")
     public Map<String, Object> getInventoryMetrics() {
         Map<String, Object> metrics = new HashMap<>();
 
-        // Métricas generales
+        // General metrics
         int totalStock = productList.stream()
                 .filter(p -> p.getQuantityInStock() != null)
                 .mapToInt(Product::getQuantityInStock)
@@ -123,7 +126,7 @@ public class ProductController {
         metrics.put("totalValue", totalValue);
         metrics.put("avgPrice", avgPrice);
 
-        // Métricas por categoría
+        // Metrics by category
         Map<String, Map<String, Object>> byCategory = new HashMap<>();
         productList.stream()
                 .filter(p -> p.getCategory() != null)
@@ -154,7 +157,7 @@ public class ProductController {
         return metrics;
     }
 
-    // GET /products - Obtiene productos filtrados, ordenados y paginados
+    // GET /products - Gets filtered, sorted, and paginated products
     @GetMapping
     public List<Product> getAllProducts(
             @RequestParam(required = false) String name,
@@ -167,7 +170,7 @@ public class ProductController {
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        // 1. Filtro
+        // 1. Filtering
         Stream<Product> stream = productList.stream();
 
         if (name != null && !name.isEmpty()) {
@@ -180,7 +183,7 @@ public class ProductController {
             stream = stream.filter(p -> inStock ? p.getQuantityInStock() > 0 : p.getQuantityInStock() == 0);
         }
 
-        // 2. Ordenamiento (puedes ordenar hasta por 2 campos)
+        // 2. Sorting (you can sort by up to 2 fields)
         Comparator<Product> comparator = null;
         if (sortBy != null) {
             comparator = getComparator(sortBy, order);
@@ -193,7 +196,7 @@ public class ProductController {
             stream = stream.sorted(comparator);
         }
 
-        // 3. Paginación (page empieza en 0)
+        // 3. Pagination (page starts at 0)
         List<Product> filteredList = stream.collect(Collectors.toList());
         int fromIndex = page * size;
         int toIndex = Math.min(fromIndex + size, filteredList.size());
@@ -201,7 +204,7 @@ public class ProductController {
         return filteredList.subList(fromIndex, toIndex);
     }
 
-    // Maneja los errores de validación y regresa un JSON con los mensajes de error
+    // Handles validation errors and returns a JSON with error messages
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -213,7 +216,7 @@ public class ProductController {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    // Utilidad: Devuelve el comparator según el campo y orden
+    // Utility: Returns the comparator based on the field and order
     private Comparator<Product> getComparator(String field, String order) {
         Comparator<Product> comparator;
         switch (field) {

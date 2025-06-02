@@ -32,7 +32,7 @@ public class ProductControllerTest {
     public void testCreateProduct_Valid() throws Exception {
         Product newProduct = new Product();
         newProduct.setName("Pepsi");
-        newProduct.setCategory("Bebida");
+        newProduct.setCategory("Drink");
         newProduct.setUnitPrice(11.0);
         newProduct.setQuantityInStock(15);
 
@@ -48,7 +48,7 @@ public class ProductControllerTest {
     @Test
     public void testCreateProduct_Invalid() throws Exception {
         Product newProduct = new Product();
-        newProduct.setCategory("Bebida");
+        newProduct.setCategory("Drink");
         newProduct.setUnitPrice(11.0);
         newProduct.setQuantityInStock(15);
 
